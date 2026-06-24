@@ -1,8 +1,7 @@
 #include<stdio.h>
 
 int main() {
-    int num;
-    float digit1,digit2,digit3;
+    int num,digit1,digit2,digit3;
 
     printf("Nhap so co 3 chu so: \n");
     scanf("%d",&num);
@@ -18,7 +17,7 @@ int main() {
     num /= 10;
     printf("num: %d, digit: %f\n", num, digit3);
     
-    float sum = digit1 + digit2 + digit3;
+    int sum = digit1 + digit2 + digit3;
 
     printf("Tong 3 chu so la: %f",sum);
     
