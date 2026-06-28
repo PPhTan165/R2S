@@ -4,12 +4,12 @@ const float PI = 3.14;
 int main(){
     // tao bien ban kinh;
     float r,areas,perimeter;
-    printf("Nhap ban kinh hinh tron: ");
+    printf("\nEnter the radius of circle: ");
     scanf("%f",&r);
 
     areas = r*r*PI;
     perimeter = 2*r*PI;
 
-    printf("chu vi hinh tron: %f\n",areas);
-    printf("dien tich hinh tron: %f\n",perimeter);
+    printf("Area of circle: %f\n",areas);
+    printf("Perimeter of circle: %f\n",perimeter);
 }
