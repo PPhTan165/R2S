@@ -2,11 +2,11 @@ package session_03;
 
 import java.util.Scanner;
 
-public class Vase extends Item{
+public class Vase extends Item {
     private int height;
     private String material;
 
-    public Vase(){
+    public Vase() {
         super();
     }
 
@@ -25,15 +25,15 @@ public class Vase extends Item{
     }
 
     public void setHeight(int height) {
-        if( height < 0 || height > 2000){
+        if (height < 0 || height > 2000) {
             throw new IllegalArgumentException("Height must be around in 0 - 2000");
         }
         this.height = height;
     }
 
     public void setMaterial(String material) {
-        if(material == null || material.trim().isEmpty()){
-            throw new IllegalArgumentException("Mateial cannot be empty");
+        if (material == null || material.trim().isEmpty()) {
+            throw new IllegalArgumentException("Material cannot be empty");
         }
         this.material = material.trim();
     }
@@ -56,6 +56,6 @@ public class Vase extends Item{
 
     @Override
     public String toString() {
-        return String.format("Value: %d, Creator: %s, Height: %d, Material: %s",value,creator,height,material);
+        return String.format("Value: %d, Creator: %s, Height: %d, Material: %s", value, creator, height, material);
     }
 }
