@@ -45,10 +45,16 @@ public class Customer {
     }
 
     public void setName(String name) {
-        this.name = name;
+        if(name == null | name.trim().isEmpty()){
+            throw new IllegalArgumentException("Name can not be empty");
+        }
+        this.name = name.trim();
     }
 
     public void setContact(String contact) {
+        if(contact == null | contact.trim().isEmpty()){
+            throw new IllegalArgumentException("Contact can not be empty");
+        }
         this.contact = contact;
     }
 

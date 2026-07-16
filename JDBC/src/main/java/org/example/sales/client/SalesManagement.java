@@ -1,7 +1,9 @@
 package org.example.sales.client;
 
 import org.example.sales.dao.CustomerDAO;
+import org.example.sales.dao.EmployeeDAO;
 import org.example.sales.entities.Customer;
+import org.example.sales.entities.Employee;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,11 +15,17 @@ public class SalesManagement {
     private static Scanner sc;
     private CustomerDAO customerDAO;
     private CustomerForm customerForm;
+    private EmployeeDAO employeeDAO;
+    private EmployeeForm employeeForm;
 
     static final String GET_ALL_CUSTOMERS = "1";
     static final String ADD_NEW_CUSTOMER = "2";
     static final String UPDATE_CUSTOMER = "3";
     static final String REMOVE_CUSTOMER = "4";
+    static final String GET_ALL_EMPLOYEES = "5";
+    static final String ADD_NEW_EMPLOYEE = "6";
+    static final String UPDATE_EMPLOYEE = "7";
+    static final String REMOVE_EMPLOYEE = "8";
     static final String QUIT = "0";
 
 
@@ -28,6 +36,8 @@ public class SalesManagement {
         //Customer
         customerForm = new CustomerForm(sc);
         customerDAO = new CustomerDAO(conn);
+        employeeDAO = new EmployeeDAO(conn);
+        employeeForm = new EmployeeForm(sc);
     }
 
     public SalesManagement() throws SQLException {
@@ -50,6 +60,10 @@ public class SalesManagement {
         System.out.println("2. Add new an customer");
         System.out.println("3. Change customer information");
         System.out.println("4. Remove an customer");
+        System.out.println("5. Get all employees");
+        System.out.println("6. Add new an employee");
+        System.out.println("7. Change employee information");
+        System.out.println("8. Remove an employee");
         System.out.println("0. Quit");
         System.out.print("Your choice: ");
     }
@@ -98,6 +112,50 @@ public class SalesManagement {
         }
     }
 
+    private void displayAllEmployees() throws SQLException {
+        ArrayList<Employee> employees = employeeDAO.selectAll();
+
+        if (employees == null || employees.isEmpty()) {
+            System.out.println("Not found");
+            return;
+        }
+
+        for (Employee employee : employees) {
+            System.out.println(employee);
+        }
+    }
+
+    private void addEmployee() throws SQLException {
+        Employee employee = employeeForm.getEmployee();
+
+        if (employeeDAO.insert(employee)) {
+            System.out.println("Successful");
+        } else {
+            System.out.println("Unsuccessful");
+        }
+    }
+
+    private void updateEmployee() throws SQLException {
+        int id = employeeForm.getId();
+        Employee employee = employeeForm.getEmployee();
+
+        if (employeeDAO.update(id, employee)) {
+            System.out.println("Successful");
+        } else {
+            System.out.println("Unsuccessful");
+        }
+    }
+
+    private void removeEmployee() throws SQLException {
+        int id = employeeForm.getId();
+
+        if (employeeDAO.delete(id)) {
+            System.out.println("Successful");
+        } else {
+            System.out.println("Unsuccessful");
+        }
+    }
+
     public static void main(String[] args) {
         String choice = "";
         SalesManagement management = null;
@@ -121,6 +179,19 @@ public class SalesManagement {
                     case REMOVE_CUSTOMER:
                         management.removeCustomer();
                         break;
+                    case GET_ALL_EMPLOYEES:
+                        management.displayAllEmployees();
+                        break;
+                    case ADD_NEW_EMPLOYEE:
+                        management.addEmployee();
+                        break;
+                    case UPDATE_EMPLOYEE:
+                        management.updateEmployee();
+                        break;
+                    case REMOVE_EMPLOYEE:
+                        management.removeEmployee();
+                        break;
+
                     default:
                         if (!choice.equals(QUIT)) {
                             System.out.println("Wrong choice");
