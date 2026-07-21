@@ -2,7 +2,7 @@ package org.example.api.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Generated;
+
 
 import java.time.LocalDate;
 

@@ -28,4 +28,23 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException ex, HttpServletRequest req){
         return build(HttpStatus.NOT_FOUND,ex.getMessage(),req.getRequestURI(),null);
     }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ApiError> handleBusinessException(
+            BusinessException ex,
+            HttpServletRequest request
+    ){
+        HttpStatus status = ex.getStatus();
+
+        ApiError error = new ApiError(
+                Instant.now(),
+                status.value(),
+                status.getReasonPhrase(),
+                ex.getMessage(),
+                request.getRequestURI(),
+                null
+        );
+
+        return ResponseEntity.status(status).body(error);
+    }
 }
