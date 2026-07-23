@@ -37,6 +37,11 @@ public class CustomerController {
         return service.getAll();
     }
 
+    @GetMapping("/search")
+    public List<CustomerResponse> search(@RequestParam String name){
+        return service.searchByName(name);
+    }
+
     @PutMapping("/{id}")
     public CustomerResponse update(
             @PathVariable Integer id,

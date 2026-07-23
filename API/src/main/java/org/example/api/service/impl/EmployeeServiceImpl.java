@@ -45,6 +45,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setLastName(request.getLastName());
         employee.setBirthDate(request.getBirthDate());
         if(request.getSupervisorId() != null) {
+            System.out.println("supervisorId: " + request.getSupervisorId());
             Employee supervisor = employeeRepository.findById(request.getSupervisorId())
                     .orElseThrow(() -> new ResourceNotFoundException("Supervisor not found with id = " + request.getSupervisorId()));
             employee.setSupervisor(supervisor);
@@ -90,7 +91,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         response.setFirstName(e.getFirstName());
         response.setLastName(e.getLastName());
         response.setBirthDate(e.getBirthDate());
-        response.setSupervisorId(e.getSupervisor().getEmployeeId());
+        if(e.getSupervisor() != null){
+            response.setSupervisorId(e.getSupervisor().getEmployeeId());
+        }else{
+            response.setSupervisorId(null);
+        }
         return response;
     }
 }

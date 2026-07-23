@@ -16,10 +16,6 @@ import java.util.List;
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository repository;
 
-    public CustomerServiceImpl(CustomerRepository repository) {
-        this.repository = repository;
-    }
-
     private Customer mapToEntity(CustomerRequest request){
         Customer c = new Customer();
         c.setCustomerName(request.getCustomerName());
@@ -45,7 +41,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public CustomerResponse create(CustomerRequest request){
         Customer customer = mapToEntity(request);
-        return mapToResponse(customer);
+        return mapToResponse(repository.save(customer));
     }
 
     @Override
@@ -60,7 +56,7 @@ public class CustomerServiceImpl implements CustomerService {
         customer.setPostalCode(request.getPostalCode());
         customer.setCountry(request.getCountry());
 
-        return mapToResponse(customer);
+        return mapToResponse(repository.save(customer));
     }
 
     @Override
