@@ -7,6 +7,7 @@ import org.example.api.dto.CustomerResponse;
 import org.example.api.service.CustomerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class CustomerController {
 
     private final CustomerService service;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<CustomerResponse> create(
             @Valid @RequestBody CustomerRequest request
@@ -32,6 +34,7 @@ public class CustomerController {
         return service.getById(id);
     }
 
+    @PreAuthorize("hasAnyRole('USER',ADMIN')")
     @GetMapping
     public List<CustomerResponse> getAll(){
         return service.getAll();
