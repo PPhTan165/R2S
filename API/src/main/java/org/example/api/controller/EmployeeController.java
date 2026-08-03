@@ -19,32 +19,36 @@ import java.util.List;
 public class EmployeeController {
     private final EmployeeService employeeService;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //READ ALL
+    @PreAuthorize("hasAuthority('EMPLOYEE_VIEW')")
     @GetMapping
     public ResponseEntity<List<EmployeeResponse>> getAll() {
         return ResponseEntity.ok(employeeService.getAll());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //READ BY ID
+    @PreAuthorize("hasAuthority('EMPLOYEE_VIEW')")
     @GetMapping("/{id}")
     public ResponseEntity<EmployeeResponse> getEmployeeById(@PathVariable Integer id) {
         EmployeeResponse employee = employeeService.getById(id);
         return ResponseEntity.ok(employee);
     }
-    //======= CREATE ===========
-    @PreAuthorize("hasRole('ADMIN')")
+    //CREATE
+    @PreAuthorize("hasAuthority('EMPLOYEE_CREATE')")
     @PostMapping
     public ResponseEntity<EmployeeResponse> create(@RequestBody EmployeeRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(employeeService.create(request));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //UPDATE
+    @PreAuthorize("hasAuthority('EMPLOYEE_UPDATE')")
     @PutMapping("/{id}")
     public ResponseEntity<EmployeeResponse> update(@PathVariable Integer id, @RequestBody EmployeeRequest request) {
         return ResponseEntity.ok(employeeService.update(id, request));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //DELETE
+    @PreAuthorize("hasAuthority('EMPLOYEE_DELETE')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Integer id) {
         employeeService.delete(id);

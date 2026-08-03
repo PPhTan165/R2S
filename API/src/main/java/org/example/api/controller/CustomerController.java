@@ -19,7 +19,8 @@ public class CustomerController {
 
     private final CustomerService service;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //CREATE
+    @PreAuthorize("hasAuthority('CUSTOMER_CREATE')")
     @PostMapping
     public ResponseEntity<CustomerResponse> create(
             @Valid @RequestBody CustomerRequest request
@@ -27,6 +28,8 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
     }
 
+    //READ BY ID
+    @PreAuthorize("hasAuthority('CUSTOMER_VIEW')")
     @GetMapping("/{id}")
     public CustomerResponse getById(
             @PathVariable Integer id
@@ -34,19 +37,22 @@ public class CustomerController {
         return service.getById(id);
     }
 
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    //READ ALL
+    @PreAuthorize("hasAuthority('CUSTOMER_VIEW')")
     @GetMapping
     public List<CustomerResponse> getAll(){
         return service.getAll();
     }
 
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    //SEARCH
+    @PreAuthorize("hasAuthority('CUSTOMER_VIEW')")
     @GetMapping("/search")
     public List<CustomerResponse> search(@RequestParam String name){
         return service.searchByName(name);
     }
 
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
+    //UPDATE
+    @PreAuthorize("hasAuthority('CUSTOMER_UPDATE')")
     @PutMapping("/{id}")
     public CustomerResponse update(
             @PathVariable Integer id,
@@ -54,7 +60,9 @@ public class CustomerController {
     ){
         return service.update(id,request);
     }
-    @PreAuthorize("hasRole('ADMIN')")
+
+    //DELETE
+    @PreAuthorize("hasAuthority('CUSTOMER_DELETE')")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id){
         service.delete(id);
