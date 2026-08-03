@@ -73,4 +73,26 @@ public class AuthServiceImpl implements AuthService {
 
         return  new LoginResponse(token,exp);
     }
+
+    @Override
+    public RegisterResponse registerAdmin(RegisterRequest request){
+        if(userRepository.existsByUsername(request.getUsername())){
+            throw new BusinessValidationException("Username already exists");
+        }
+
+        Role adminRole = roleRepository.findByName("ADMIN")
+                .orElseThrow(()-> new ResourceNotFoundException("Role ADMIN not found"));
+
+        User admin = new User();
+        admin.setUsername(request.getUsername());
+        admin.setEmail(request.getEmail());
+
+        admin.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        admin.setRoles(Set.of(adminRole));
+
+        userRepository.save(admin);
+
+        return new RegisterResponse("Admin register success");
+    }
 }

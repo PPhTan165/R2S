@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.example.api.dto.EmployeeRequest;
 import org.example.api.dto.EmployeeResponse;
 import org.example.api.entity.Employee;
+import org.example.api.exception.BusinessValidationException;
 import org.example.api.exception.ResourceNotFoundException;
 import org.example.api.repository.EmployeeRepository;
 import org.example.api.service.EmployeeService;
@@ -39,6 +40,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public EmployeeResponse create(EmployeeRequest request){
+        if(employeeRepository.existsByLastNameAndFirstName(request.getLastName(),request.getFirstName())){
+            throw new BusinessValidationException("Employee already exists");
+        }
+
         Employee employee = new Employee();
 
         employee.setFirstName(request.getFirstName());
@@ -63,18 +68,19 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(()->new ResourceNotFoundException("Employee not found with id =" +id));
 
         employee.setFirstName(request.getFirstName());
-        employee.setFirstName(request.getFirstName());
+        employee.setLastName(request.getLastName());
         employee.setBirthDate(request.getBirthDate());
         if(request.getSupervisorId() != null){
 
             Employee supervisor = employeeRepository.findById(request.getSupervisorId())
                     .orElseThrow(()->new ResourceNotFoundException("Supervisor not found with id ="+request.getSupervisorId()));
-            employee.setEmployeeId(supervisor.getEmployeeId());
+            employee.setSupervisor(supervisor);
         }else {
             employee.setSupervisor(null);
         }
+        System.out.println(employee);
         Employee updated = employeeRepository.save(employee);
-        return toResponse(employee);
+        return toResponse(updated);
     }
 
     @Override

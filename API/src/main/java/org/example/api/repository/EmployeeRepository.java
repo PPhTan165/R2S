@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee,Integer> {
     List<Employee> findByLastNameContainingIgnoreCase(String lastName);
+    boolean existsByLastNameAndFirstName(String lastName, String firstName);
 }

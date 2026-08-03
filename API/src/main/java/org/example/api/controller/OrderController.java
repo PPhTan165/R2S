@@ -48,8 +48,8 @@ public class OrderController {
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/between")
     public List<OrderResponse> between(
-            @RequestBody @DateTimeFormat(iso =  DateTimeFormat.ISO.DATE_TIME)LocalDateTime from,
-            @RequestBody @DateTimeFormat(iso =  DateTimeFormat.ISO.DATE_TIME)LocalDateTime to
+            @RequestParam @DateTimeFormat(iso =  DateTimeFormat.ISO.DATE_TIME)LocalDateTime from,
+            @RequestParam @DateTimeFormat(iso =  DateTimeFormat.ISO.DATE_TIME)LocalDateTime to
             ){
         return service.getBetween(from,to);
     }

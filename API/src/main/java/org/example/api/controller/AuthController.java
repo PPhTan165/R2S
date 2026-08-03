@@ -8,7 +8,6 @@ import org.example.api.dto.RegisterRequest;
 import org.example.api.dto.RegisterResponse;
 import org.example.api.service.AuthService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,14 +21,19 @@ public class AuthController {
 
     @PostMapping("/register")
     public RegisterResponse register(
-            @RequestBody @Valid RegisterRequest request){
-        return  authService.register(request);
+            @RequestBody @Valid RegisterRequest request) {
+        return authService.register(request);
     }
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
             @RequestBody @Valid LoginRequest request
-            ){
-        return ResponseEntity.ok(authService.login(request)) ;
+    ) {
+        return ResponseEntity.ok(authService.login(request));
+    }
+
+    @PostMapping("/admin/register")
+    public RegisterResponse registerAdmin(@RequestBody @Valid RegisterRequest request) {
+        return authService.registerAdmin(request);
     }
 }

@@ -8,4 +8,5 @@ import org.example.api.dto.RegisterResponse;
 public interface AuthService {
     RegisterResponse register(RegisterRequest request);
     LoginResponse login(LoginRequest request);
+    RegisterResponse registerAdmin(RegisterRequest request);
 }

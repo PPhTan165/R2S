@@ -34,17 +34,19 @@ public class CustomerController {
         return service.getById(id);
     }
 
-    @PreAuthorize("hasAnyRole('USER',ADMIN')")
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping
     public List<CustomerResponse> getAll(){
         return service.getAll();
     }
 
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @GetMapping("/search")
     public List<CustomerResponse> search(@RequestParam String name){
         return service.searchByName(name);
     }
 
+    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     @PutMapping("/{id}")
     public CustomerResponse update(
             @PathVariable Integer id,
@@ -52,7 +54,7 @@ public class CustomerController {
     ){
         return service.update(id,request);
     }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id){
         service.delete(id);
