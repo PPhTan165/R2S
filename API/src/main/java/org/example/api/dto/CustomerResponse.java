@@ -1,8 +1,10 @@
 package org.example.api.dto;
 
+import lombok.Data;
 import lombok.Getter;
 
 @Getter
+@Data
 public class CustomerResponse {
     private String customerName;
     private String contactName;

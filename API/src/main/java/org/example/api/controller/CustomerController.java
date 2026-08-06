@@ -64,7 +64,8 @@ public class CustomerController {
     //DELETE
     @PreAuthorize("hasAuthority('CUSTOMER_DELETE')")
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Integer id){
+    public ResponseEntity<Void> delete(@PathVariable Integer id){
         service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
