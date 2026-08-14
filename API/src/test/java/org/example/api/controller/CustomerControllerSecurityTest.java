@@ -215,6 +215,29 @@ class CustomerControllerSecurityTest {
 
     }
 
+    //UPDATE - 400
+    @Test
+    void update_withPermissionAndBlankCustomerName_shouldReturn400() throws Exception {
+        mockMvc.perform(put("/api/v1/customers/1")
+                        .with(user("user").authorities(()->"CUSTOMER_UPDATE"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                      "customerName": "",
+                                      "contactName": "Doe",
+                                      "address": "Quan7",
+                                      "city": "HCM",
+                                      "postalCode": "75000",
+                                      "country": "VN"
+                                }
+                                """))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.fieldErrors.customerName").value("Customer name is required"));
+
+        verify(customerService, never()).update(eq(1), any());
+    }
+
     //UPDATE - 403
     @Test
     void update_withoutPermission_shouldReturn403() throws Exception {
