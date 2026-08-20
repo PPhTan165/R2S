@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -68,6 +67,7 @@ class OrderServiceImplTest {
         order.setEmployee(employee);
     }
 
+    // CREATE - SAVE ORDER
     @Test
     void create_whenCustomerAndEmployeeExist_shouldSaveOrder() {
         OrderRequest request = new OrderRequest();
@@ -96,6 +96,7 @@ class OrderServiceImplTest {
         verify(orderRepository).save(any(Order.class));
     }
 
+    // CREATE - THROW EXCEPTION
     @Test
     void create_whenCustomerNotFound_shouldThrowException() {
         OrderRequest request = new OrderRequest();
@@ -112,6 +113,7 @@ class OrderServiceImplTest {
         verify(orderRepository, never()).save(any(Order.class));
     }
 
+    // UPDATE - UPDATE ORDER
     @Test
     void update_whenOrderCustomerAndEmployeeExist_shouldUpdateOrder() {
         LocalDateTime updatedDate = LocalDateTime.of(2026, 8, 15, 10, 0);
@@ -137,6 +139,7 @@ class OrderServiceImplTest {
         verify(orderRepository).save(order);
     }
 
+    // UPDATE - THROW EXCEPTION
     @Test
     void update_whenOrderNotFound_shouldThrowException() {
         OrderRequest request = new OrderRequest();
@@ -154,6 +157,7 @@ class OrderServiceImplTest {
         verify(orderRepository, never()).save(any(Order.class));
     }
 
+    // UPDATE - THROW EXCEPTION
     @Test
     void update_whenCustomerNotFound_shouldThrowException() {
         OrderRequest request = new OrderRequest();
@@ -172,6 +176,7 @@ class OrderServiceImplTest {
         verify(orderRepository, never()).save(any(Order.class));
     }
 
+    // UPDATE - THROW EXCEPTION
     @Test
     void update_whenEmployeeNotFound_shouldThrowException() {
         OrderRequest request = new OrderRequest();
@@ -191,6 +196,7 @@ class OrderServiceImplTest {
         verify(orderRepository, never()).save(any(Order.class));
     }
 
+    // DELETE - DELETE ORDER
     @Test
     void delete_whenOrderExists_shouldDeleteOrder() {
         when(orderRepository.findById(1))
@@ -201,6 +207,7 @@ class OrderServiceImplTest {
         verify(orderRepository).delete(order);
     }
 
+    // DELETE - THROW EXCEPTION
     @Test
     void delete_whenOrderNotFound_shouldThrowException() {
         when(orderRepository.findById(99))
@@ -212,6 +219,7 @@ class OrderServiceImplTest {
         verify(orderRepository, never()).delete(any(Order.class));
     }
 
+    // GETBYID - RETURN ORDER
     @Test
     void getById_whenOrderExists_shouldReturnOrder() {
         when(orderRepository.findById(1))
@@ -224,6 +232,7 @@ class OrderServiceImplTest {
         assertEquals("John Doe", res.getEmployeeName());
     }
 
+    // GETBYID - THROW EXCEPTION
     @Test
     void getById_whenOrderNotFound_shouldThrowException() {
         when(orderRepository.findById(99))
@@ -233,6 +242,7 @@ class OrderServiceImplTest {
                 () -> orderService.getById(99));
     }
 
+    // GETALL - RETURN LIST
     @Test
     void getAll_shouldReturnList() {
         when(orderRepository.findAll())
@@ -244,6 +254,7 @@ class OrderServiceImplTest {
         assertEquals("Acme", results.get(0).getCustomerName());
     }
 
+    // GETBYEMPLOYEE - RETURN ORDERS
     @Test
     void getByEmployee_shouldReturnOrders() {
         when(orderRepository.findOrdersByEmployeeWithDetails(3))
@@ -255,6 +266,7 @@ class OrderServiceImplTest {
         assertEquals(3, results.get(0).getEmployeeId());
     }
 
+    // GETBETWEEN - RETURN ORDERS
     @Test
     void getBetween_shouldReturnOrders() {
         LocalDateTime from = LocalDateTime.of(2026, 8, 14, 0, 0);

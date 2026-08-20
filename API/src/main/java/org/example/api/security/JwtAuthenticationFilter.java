@@ -18,7 +18,7 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTH_PATH_PATTERN = "/api/v1/auth/**";
 
-    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+//    private final AntPathMatcher pathMatcher = new AntPathMatcher();
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
 
@@ -29,10 +29,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.userDetailsService = userDetailsService;
     }
 
-    @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) {
-        return pathMatcher.match(AUTH_PATH_PATTERN, request.getServletPath());
-    }
+//    @Override
+//    protected boolean shouldNotFilter(HttpServletRequest request) {
+//        return pathMatcher.match(AUTH_PATH_PATTERN, request.getServletPath());
+//    }
 
     @Override
     protected void doFilterInternal(
@@ -40,6 +40,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
             )throws ServletException, IOException {
+
         String header = request.getHeader("Authorization");
         if(header == null || !header.startsWith("Bearer ")){
             filterChain.doFilter(request,response);
@@ -48,7 +49,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String token = header.substring(7);
 
+        //If token is invalid -> Throw Spring security 401
         if (!jwtService.isTokenValid(token)) {
+            filterChain.doFilter(request,response);
+            return;
+        }
+
+        // If you already have an authentication certificate, then skip this step.
+        if(SecurityContextHolder.getContext().getAuthentication() != null){
             filterChain.doFilter(request,response);
             return;
         }

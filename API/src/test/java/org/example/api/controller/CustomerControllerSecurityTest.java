@@ -1,84 +1,65 @@
 package org.example.api.controller;
 
 import org.example.api.dto.CustomerResponse;
-import org.example.api.security.CustomUserDetailsService;
-import org.example.api.security.JwtService;
-import org.example.api.security.RestAccessDeniedHandler;
-import org.example.api.security.RestAuthenticationEntityPoint;
-import org.example.api.security.SecurityConfig;
 import org.example.api.service.CustomerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.web.servlet.SecurityFilterAutoConfiguration;
-import org.springframework.boot.security.autoconfigure.web.servlet.ServletWebSecurityAutoConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.testSecurityContext;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(CustomerController.class)
-@ImportAutoConfiguration({
-        SecurityAutoConfiguration.class,
-        ServletWebSecurityAutoConfiguration.class,
-        SecurityFilterAutoConfiguration.class
-})
-@Import({
-        SecurityConfig.class,
-        RestAuthenticationEntityPoint.class,
-        RestAccessDeniedHandler.class
-})
+@SpringBootTest
 @AutoConfigureMockMvc
 class CustomerControllerSecurityTest {
+
     @Autowired
     MockMvc mockMvc;
 
     @MockitoBean
     CustomerService customerService;
 
-    @MockitoBean
-    JwtService jwtService;
-
-    @MockitoBean
-    CustomUserDetailsService userDetailsService;
-
     private CustomerResponse response;
 
     @BeforeEach
-    void setup(){
+    void setup() {
         response = new CustomerResponse(
                 "John",
                 "Doe",
                 "Quan7",
                 "HCM",
                 "75000",
-                "VN");
+                "VN"
+        );
     }
-    //CREATE - 201
+
+    // CREATE - 201
     @Test
+    @WithMockUser(username = "admin", authorities = {"CUSTOMER_CREATE"})
     void create_withPermission_shouldReturn201() throws Exception {
         when(customerService.create(any()))
                 .thenReturn(response);
 
         mockMvc.perform(post("/api/v1/customers")
-                        .with(user("user").authorities(() -> "CUSTOMER_CREATE"))
+                        .with(testSecurityContext())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -90,16 +71,18 @@ class CustomerControllerSecurityTest {
                                     "country": "VN"
                                 }
                                 """))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.customerName").value("John"));
 
         verify(customerService).create(any());
     }
 
-    //CREATE - 403
+    // CREATE - 403
     @Test
+    @WithMockUser(username = "user", authorities = {})
     void create_withoutPermission_shouldReturn403() throws Exception {
         mockMvc.perform(post("/api/v1/customers")
-                        .with(user("user").authorities(List.of()))
+                        .with(testSecurityContext())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -116,89 +99,96 @@ class CustomerControllerSecurityTest {
         verify(customerService, never()).create(any());
     }
 
-    //GET ALL - 200
+    // GETALL - 200
     @Test
+    @WithMockUser(username = "admin", authorities = {"CUSTOMER_VIEW"})
     void getAll_withPermission_shouldReturn200() throws Exception {
         when(customerService.getAll())
                 .thenReturn(List.of(response, response));
 
         mockMvc.perform(get("/api/v1/customers")
-                        .with(user("user").authorities(()->"CUSTOMER_VIEW")))
+                        .with(testSecurityContext()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].customerName").value("John"));
+
+        verify(customerService).getAll();
     }
 
-    //GET ALL - 403
+    // GETALL - 403
     @Test
+    @WithMockUser(username = "user", authorities = {})
     void getAll_withoutPermission_shouldReturn403() throws Exception {
-        when(customerService.getAll())
-                .thenReturn(List.of(response, response));
-
         mockMvc.perform(get("/api/v1/customers")
-                        .with(user("user").authorities(List.of())))
+                        .with(testSecurityContext()))
                 .andExpect(status().isForbidden());
+
+        verify(customerService, never()).getAll();
     }
 
-    //GET BY ID - 200
+    // GETBYID - 200
     @Test
+    @WithMockUser(username = "admin", authorities = {"CUSTOMER_VIEW"})
     void getById_withPermission_shouldReturn200() throws Exception {
         when(customerService.getById(1))
                 .thenReturn(response);
 
         mockMvc.perform(get("/api/v1/customers/1")
-                        .with(user("user").authorities(()->"CUSTOMER_VIEW")))
+                        .with(testSecurityContext()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customerName").value("John"));
+
+        verify(customerService).getById(1);
     }
 
-    //GET BY ID - 403
+    // GETBYID - 403
     @Test
-    void getById_withoutPermission_shouldReturn200() throws Exception {
-        when(customerService.getById(1))
-                .thenReturn(response);
-
+    @WithMockUser(username = "user", authorities = {})
+    void getById_withoutPermission_shouldReturn403() throws Exception {
         mockMvc.perform(get("/api/v1/customers/1")
-                        .with(user("user").authorities(List.of())))
+                        .with(testSecurityContext()))
                 .andExpect(status().isForbidden());
+
+        verify(customerService, never()).getById(1);
     }
 
-    //SEARCH BY NAME - 200
+    // SEARCHBYNAME - 200
     @Test
-    void searchByName_withPermission_shouldReturn200() throws Exception{
+    @WithMockUser(username = "admin", authorities = {"CUSTOMER_VIEW"})
+    void searchByName_withPermission_shouldReturn200() throws Exception {
         when(customerService.searchByName("John"))
                 .thenReturn(List.of(response));
 
         mockMvc.perform(get("/api/v1/customers/search")
-                        .param("name","John")
-                        .with(user("user").authorities(()->"CUSTOMER_VIEW")))
+                        .param("name", "John")
+                        .with(testSecurityContext()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1))
                 .andExpect(jsonPath("$[0].customerName").value("John"));
 
+        verify(customerService).searchByName("John");
     }
 
-    //SEARCH BY NAME - 403
+    // SEARCHBYNAME - 403
     @Test
-    void searchByName_withoutPermission_shouldReturn403() throws Exception{
-        when(customerService.searchByName("John"))
-                .thenReturn(List.of(response));
-
+    @WithMockUser(username = "user", authorities = {})
+    void searchByName_withoutPermission_shouldReturn403() throws Exception {
         mockMvc.perform(get("/api/v1/customers/search")
-                        .param("name","John")
-                        .with(user("user").authorities(List.of())))
+                        .param("name", "John")
+                        .with(testSecurityContext()))
                 .andExpect(status().isForbidden());
 
+        verify(customerService, never()).searchByName("John");
     }
 
-    //UPDATE - 200
+    // UPDATE - 200
     @Test
+    @WithMockUser(username = "admin", authorities = {"CUSTOMER_UPDATE"})
     void update_withPermission_shouldReturn200() throws Exception {
-
         when(customerService.update(eq(1), any()))
                 .thenReturn(response);
 
         mockMvc.perform(put("/api/v1/customers/1")
-                        .with(user("user").authorities(()->"CUSTOMER_UPDATE"))
+                        .with(testSecurityContext())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -213,13 +203,15 @@ class CustomerControllerSecurityTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.customerName").value("John"));
 
+        verify(customerService).update(eq(1), any());
     }
 
-    //UPDATE - 400
+    // UPDATE - 400 - VALIDATION
     @Test
+    @WithMockUser(username = "admin", authorities = {"CUSTOMER_UPDATE"})
     void update_withPermissionAndBlankCustomerName_shouldReturn400() throws Exception {
         mockMvc.perform(put("/api/v1/customers/1")
-                        .with(user("user").authorities(()->"CUSTOMER_UPDATE"))
+                        .with(testSecurityContext())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -232,21 +224,18 @@ class CustomerControllerSecurityTest {
                                 }
                                 """))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Validation failed"))
+                .andExpect(jsonPath("$.message").value("Validation fail"))
                 .andExpect(jsonPath("$.fieldErrors.customerName").value("Customer name is required"));
 
         verify(customerService, never()).update(eq(1), any());
     }
 
-    //UPDATE - 403
+    // UPDATE - 403
     @Test
+    @WithMockUser(username = "user", authorities = {})
     void update_withoutPermission_shouldReturn403() throws Exception {
-
-        when(customerService.update(eq(1), any()))
-                .thenReturn(response);
-
         mockMvc.perform(put("/api/v1/customers/1")
-                        .with(user("user").authorities(List.of()))
+                        .with(testSecurityContext())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
@@ -260,21 +249,28 @@ class CustomerControllerSecurityTest {
                                 """))
                 .andExpect(status().isForbidden());
 
+        verify(customerService, never()).update(eq(1), any());
     }
 
-    //DELETE - 204
+    // DELETE - 204 - NO CONTENT
     @Test
+    @WithMockUser(username = "admin", authorities = {"CUSTOMER_DELETE"})
     void delete_withPermission_shouldReturn204() throws Exception {
         mockMvc.perform(delete("/api/v1/customers/1")
-                        .with(user("user").authorities(()->"CUSTOMER_DELETE")))
+                        .with(testSecurityContext()))
                 .andExpect(status().isNoContent());
+
+        verify(customerService).delete(1);
     }
 
-    //DELETE - 403
+    // DELETE - 403
     @Test
-    void delete_withoutPermission_shouldReturn204() throws Exception {
+    @WithMockUser(username = "user", authorities = {})
+    void delete_withoutPermission_shouldReturn403() throws Exception {
         mockMvc.perform(delete("/api/v1/customers/1")
-                        .with(user("user").authorities(List.of())))
+                        .with(testSecurityContext()))
                 .andExpect(status().isForbidden());
+
+        verify(customerService, never()).delete(1);
     }
 }

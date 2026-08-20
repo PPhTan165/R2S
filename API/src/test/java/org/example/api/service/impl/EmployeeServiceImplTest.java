@@ -47,7 +47,7 @@ class EmployeeServiceImplTest {
         employee.setSupervisor(supervisor);
     }
 
-    //GET ALL
+    // GETALL - RETURN LIST
     @Test
     void getAll_shouldReturnList(){
         //arrange: chuẩn bị
@@ -61,7 +61,7 @@ class EmployeeServiceImplTest {
         assertEquals(2,result.size());
     }
 
-    //GET BY ID - success
+    // GETBYID - RETURN EMPLOYEE
     @Test
     void getById_whenExists_shouldReturnEmployee(){
         when(employeeRepository.findById(1))
@@ -72,7 +72,7 @@ class EmployeeServiceImplTest {
         assertEquals("John",res.getFirstName());
     }
 
-    //GET BY ID - not found
+    // GETBYID - THROW EXCEPTION
     @Test
     void getById_whenNotExists_shouldThrowException(){
         when(employeeRepository.findById(99))
@@ -82,7 +82,7 @@ class EmployeeServiceImplTest {
                 ()-> employeeService.getById(99));
     }
 
-    //CREATE
+    // CREATE - SAVE EMPLOYEE
     @Test
     void create_shouldSavedEmployee(){
         EmployeeRequest rq = new EmployeeRequest();
@@ -110,7 +110,7 @@ class EmployeeServiceImplTest {
         verify(employeeRepository).save(any(Employee.class));
     }
 
-    //UPDATE
+    // UPDATE - UPDATE EMPLOYEE
     @Test
     void update_whenExists_shouldUpdate(){
         when(employeeRepository.findById(1))
@@ -127,7 +127,7 @@ class EmployeeServiceImplTest {
         verify(employeeRepository).save(employee);
     }
 
-    //UPDATE - Not found
+    // UPDATE - THROW EXCEPTION
     @Test
     void update_whenNotExists_shouldThrowException(){
         when(employeeRepository.findById(99))
@@ -142,7 +142,7 @@ class EmployeeServiceImplTest {
         verify(employeeRepository, never()).save(any(Employee.class));
     }
 
-    //DELETE
+    // DELETE - DELETE EMPLOYEE
     @Test
     void delete_whenExists_shouldDelete(){
         when(employeeRepository.findById(1))
@@ -151,7 +151,7 @@ class EmployeeServiceImplTest {
         verify(employeeRepository).delete(employee);
     }
 
-    //DELETE - NOT EXISTS
+    // DELETE - THROW EXCEPTION
     @Test
     void delete_whenNotExists_shouldDelete(){
         when(employeeRepository.findById(99))

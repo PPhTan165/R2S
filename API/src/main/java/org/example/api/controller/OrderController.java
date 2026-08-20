@@ -60,7 +60,7 @@ public class OrderController {
     }
 
     //UPDATE
-    @PreAuthorize("hasAuthority('EMPLOYEE_UPDATE')")
+    @PreAuthorize("hasAuthority('ORDER_UPDATE')")
     @PutMapping("/{id}")
     public OrderResponse update(@PathVariable Integer id, @RequestBody OrderRequest request){
         return service.update(id,request);

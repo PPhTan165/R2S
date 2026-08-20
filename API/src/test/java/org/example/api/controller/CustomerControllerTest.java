@@ -46,7 +46,7 @@ public class CustomerControllerTest {
                 "VN");
     }
 
-    //create
+    // CREATE - 201
     @Test
     void create_shouldReturn201() throws Exception {
         when(customerService.create(any()))
@@ -63,7 +63,7 @@ public class CustomerControllerTest {
                 .andExpect(status().isCreated());
     }
 
-    //get all
+    // GETALL - 200
     @Test
     void getAll_shouldReturn200() throws Exception {
         when(customerService.getAll())
@@ -74,7 +74,7 @@ public class CustomerControllerTest {
                 .andExpect(jsonPath("$[0].customerName").value("John"));
     }
 
-    //get by id
+    // GETBYID - 200
     @Test
     void getById_shouldReturn200() throws Exception {
         when(customerService.getById(1))
@@ -85,7 +85,7 @@ public class CustomerControllerTest {
                 .andExpect(jsonPath("$.customerName").value("John"));
     }
 
-    //search by name
+    // SEARCHBYNAME - 200
     @Test
     void searchByName_shouldReturnCustomers() throws Exception{
         when(customerService.searchByName("John"))
@@ -99,7 +99,7 @@ public class CustomerControllerTest {
 
     }
 
-    //update
+    // UPDATE - 200
     @Test
     void update_shouldReturn200() throws Exception {
 
@@ -124,6 +124,7 @@ public class CustomerControllerTest {
         verify(customerService).update(eq(1),any());
     }
 
+    // DELETE - 204
     @Test
     void delete_shouldReturn204() throws Exception {
         mockMvc.perform(delete("/api/v1/customers/1"))

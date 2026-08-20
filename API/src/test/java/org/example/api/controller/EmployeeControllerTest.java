@@ -42,7 +42,7 @@ class EmployeeControllerTest {
         response.setFirstName("John");
     }
 
-    //CREATE
+    // CREATE - 201
     @Test
     void create_shouldReturn201()throws Exception{
         when(employeeService.create(any()))
@@ -59,7 +59,7 @@ class EmployeeControllerTest {
                 .andExpect(status().isCreated());
     }
 
-    //GET ALL
+    // GETALL - 200
     @Test
     void getAll_shouldReturn200() throws Exception{
         when(employeeService.getAll())
@@ -70,7 +70,7 @@ class EmployeeControllerTest {
                 .andExpect(jsonPath("$[0].firstName").value("John"));
     }
 
-    //GET BY ID
+    // GETBYID - 200
     @Test
     void getById_shouldReturn200()throws Exception{
         when(employeeService.getById(1))
@@ -81,14 +81,14 @@ class EmployeeControllerTest {
                 .andExpect(jsonPath("$.firstName").value("John"));
     }
 
-    //DELETE
+    // DELETE - 204
     @Test
     void delete_shouldReturn204()throws Exception{
         mockMvc.perform(delete("/api/v1/employees/1"))
                 .andExpect(status().isNoContent());
     }
 
-    //UPDATE
+    // UPDATE - 200
     @Test
     void update_shouldReturn200()throws Exception{
         when(employeeService.update(eq(1),any()))

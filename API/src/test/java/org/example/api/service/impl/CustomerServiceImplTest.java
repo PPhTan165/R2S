@@ -44,7 +44,7 @@ public class CustomerServiceImplTest {
         customer.setCountry("VN");
     }
 
-    //GET ALL
+    // GETALL - RETURN LIST
     @Test
     void getAll_shouldReturnList(){
         when(customerRepository.findAll())
@@ -55,7 +55,7 @@ public class CustomerServiceImplTest {
         assertEquals(2,results.size());
     }
 
-    //get by id - exists
+    // GETBYID - RETURN CUSTOMER
     @Test
     void getById_whenExists_shouldReturnCustomer(){
         when(customerRepository.findById(1))
@@ -65,7 +65,7 @@ public class CustomerServiceImplTest {
         assertEquals("John", response.getCustomerName());
     }
 
-    //Get by id - not exists
+    // GETBYID - THROW EXCEPTION
     @Test
     void getById_whenNotExists_shouldReturnException(){
         when(customerRepository.findById(99))
@@ -76,7 +76,7 @@ public class CustomerServiceImplTest {
 
     }
 
-    //search by name
+    // SEARCHBYNAME - RETURN CUSTOMER
     @Test
     void searchByName_shouldReturnCustomer(){
         when(customerRepository.findByCustomerNameContainingIgnoreCase("John"))
@@ -86,7 +86,7 @@ public class CustomerServiceImplTest {
         assertEquals(2,results.size());
     }
 
-    //create
+    // CREATE - SAVE CUSTOMER
     @Test
     void create_shouldSaveCustomer(){
         CustomerRequest req = new CustomerRequest();
@@ -107,7 +107,7 @@ public class CustomerServiceImplTest {
         verify(customerRepository).save(any(Customer.class));
     }
 
-    //update - exists
+    // UPDATE - UPDATE CUSTOMER
     @Test
     void update_whenExists_shouldUpdate(){
         when(customerRepository.findById(1))
@@ -125,7 +125,7 @@ public class CustomerServiceImplTest {
         verify(customerRepository).save(any(Customer.class));
     }
 
-    //update - not exists
+    // UPDATE - THROW EXCEPTION
     @Test
     void update_whenNotExists_shouldThrowException(){
         when(customerRepository.findById(99))
@@ -140,7 +140,7 @@ public class CustomerServiceImplTest {
         verify(customerRepository,never()).save(any(Customer.class));
     }
 
-    //delete - exists
+    // DELETE - DELETE CUSTOMER
     @Test
     void delete_whenExists_shouldDelete(){
         when(customerRepository.findById(1))
@@ -150,7 +150,7 @@ public class CustomerServiceImplTest {
         verify(customerRepository).delete(customer);
     }
 
-    //delete - not exists
+    // DELETE - THROW EXCEPTION
     @Test
     void delete_whenNotExists_shouldThrowException(){
         when(customerRepository.findById(99))
